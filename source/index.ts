@@ -149,7 +149,6 @@
 
                 this.loop( char => {
                     if ( char === sign ) {
-                        this.pointer++
                         const parser = new Parser( token )
                         oneCharResult = {
                             type: type,

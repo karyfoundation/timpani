@@ -55,7 +55,6 @@ var Parser = (function () {
         }
     };
     Parser.prototype.parseOneCharSignedGrammar = function (sign, type) {
-        var _this = this;
         var token = '';
         var oneCharResult = {
             type: 'string',
@@ -63,7 +62,6 @@ var Parser = (function () {
         };
         this.loop(function (char) {
             if (char === sign) {
-                _this.pointer++;
                 var parser = new Parser(token);
                 oneCharResult = {
                     type: type,
