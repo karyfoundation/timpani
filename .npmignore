@@ -3,3 +3,6 @@ source/**
 .gitignore
 tsconfig.json
 bin/test.js
+
+*.map
+*.tsconfig
