@@ -18,7 +18,7 @@
         length: number
     }
 
-    export type TTokenType = 'string' | 'bold' | 'italic'
+    export type TTokenType = 'string' | 'bold' | 'underline'
 
     export interface IToken {
         type: TTokenType
@@ -109,7 +109,7 @@
 
                     case '_':
                         finishCurrentStack( )
-                        results.push( parseOneCharSignedGrammar( code, '_', 'italic' ) )
+                        results.push( parseOneCharSignedGrammar( code, '_', 'underline' ) )
                         break
 
                     default:
