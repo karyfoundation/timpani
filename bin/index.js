@@ -34,7 +34,7 @@ function parseWithI(code) {
         if (currentStringStack.length !== 0) {
             results.push({
                 type: 'string',
-                value: currentStringStack
+                value: [currentStringStack]
             });
             currentStringStack = '';
         }
@@ -47,7 +47,7 @@ function parseWithI(code) {
                 break;
             case '_':
                 finishCurrentStack();
-                results.push(parseOneCharSignedGrammar(code, '_', 'italic'));
+                results.push(parseOneCharSignedGrammar(code, '_', 'underline'));
                 break;
             default:
                 currentStringStack += char;
@@ -58,7 +58,7 @@ function parseWithI(code) {
 }
 function parseOneCharSignedGrammar(code, sign, type) {
     var token = '';
-    var result = { type: 'string', value: '' };
+    var result = { type: 'string', value: [''] };
     loop(code, function (char) {
         if (char === sign) {
             code.pointer++;

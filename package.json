@@ -1,6 +1,6 @@
 {
   "name": "timpani",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Inline preferment super minimal markup parser",
   "main": "bin/index.js",
   "repository": {
