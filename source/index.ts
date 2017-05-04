@@ -154,10 +154,10 @@
 
                 this.loop( char => {
                     if ( char === sign ) {
-                        const parser = new Parser( token )
                         oneCharResult = {
                             type: type,
-                            value: parser.parse( )
+                            value: ( sign === '`' )?
+                                [ token ] : new Parser( token ).parse( )
                         }                 
                         return 0
 
