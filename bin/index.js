@@ -7,8 +7,8 @@ function parse(inlineMarkdown) {
     });
 }
 exports.parse = parse;
-function getCurrentChar(code, stack) {
-    var char = code.code[code.pointer];
+function getNextChar(code, stack) {
+    var char = code.code[code.pointer++];
     stack += char;
     return char;
 }
@@ -16,15 +16,8 @@ function loop(code, f) {
     var currentStack = '';
     var results = [];
     while (code.pointer < code.length) {
-        var currentChar = getCurrentChar(code, currentStack);
-        code.pointer++;
+        var currentChar = getNextChar(code, currentStack);
         f(currentChar);
-        if (code.pointer > code.length) {
-            return {
-                type: 'string',
-                value: currentStack
-            };
-        }
     }
 }
 function parseWithI(code) {
@@ -78,3 +71,4 @@ function parseOneCharSignedGrammar(code, sign, type) {
     });
     return result;
 }
+//# sourceMappingURL=index.js.map

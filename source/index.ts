@@ -41,8 +41,8 @@
 // ─── GET CURRENT CHAR ───────────────────────────────────────────────────────────
 //
 
-    function getCurrentChar ( code: I, stack: string ) {
-        let char = code.code[ code.pointer ]
+    function getNextChar ( code: I, stack: string ) {
+        const char = code.code[ code.pointer++ ]
         stack += char
         return char
     }
@@ -54,18 +54,8 @@
         let currentStack = ''
         let results: IToken[ ] = [ ]
         while ( code.pointer < code.length ) {
-            const currentChar = getCurrentChar( code, currentStack )
-            code.pointer++
-
+            const currentChar = getNextChar( code, currentStack )
             f( currentChar )
-
-            // safety check
-            if ( code.pointer > code.length ) {
-                return {
-                    type: 'string',
-                    value: currentStack
-                }
-            }
         }
     }
 
@@ -116,6 +106,10 @@
                         currentStringStack += char
                 }
             })
+
+        //
+        // ─── FINISHING UP ────────────────────────────────────────────────
+        //
 
             finishCurrentStack( )
 
