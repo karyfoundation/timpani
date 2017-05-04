@@ -4,7 +4,7 @@ A very small markup language for inline styling supporting:
 - Underlined: `_underlined_`
 
 ## How to use
-```
+```js
 import * as timpani from 'timpani'
 
 const ast = timpani.parse('hello *world*')
