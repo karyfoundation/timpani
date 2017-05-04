@@ -18,7 +18,7 @@
         length: number
     }
 
-    export type TTokenType = 'string' | 'bold' | 'underline'
+    export type TTokenType = 'string' | 'bold' | 'underline' | 'code'
 
     export interface IToken {
         type: TTokenType
@@ -112,6 +112,11 @@
                         case '_':
                             this.finalizeCurrentStack( )
                             this.results.push( this.parseOneCharSignedGrammar( '_', 'underline' ) )
+                            break
+
+                        case '`':
+                            this.finalizeCurrentStack( )
+                            this.results.push( this.parseOneCharSignedGrammar( '`', 'code' ) )
                             break
 
                         default:

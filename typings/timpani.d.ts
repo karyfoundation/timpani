@@ -14,9 +14,9 @@
 
     declare module 'timpani' {
 
-        export type TTokenType = 'string' | 'bold' | 'underline';
+        export type TTokenType = 'string' | 'bold' | 'underline' | 'code';
 
-        export type TTokenValue = string | IToken
+        export type TTokenValue = string | IToken;
 
         export interface IToken {
             type: TTokenType;
