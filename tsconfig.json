@@ -6,6 +6,7 @@
         "outDir": "bin",
         "sourceMap": false,
         "declaration": true,
+        "strictNullChecks": true,
         "removeComments": true
     }
 }
