@@ -22,7 +22,7 @@
 
     export interface IToken {
         type: TTokenType
-        value: IToken[ ] | string
+        value: ( IToken | string )[ ]
     }
 
 //
@@ -90,7 +90,7 @@
                 if ( currentStringStack.length !== 0 ) {
                     results.push({
                         type: 'string',
-                        value: currentStringStack
+                        value: [ currentStringStack ]
                     })
                     currentStringStack = ''
                 }
@@ -131,7 +131,7 @@
 
     function parseOneCharSignedGrammar ( code: I, sign: string, type: TTokenType ): IToken {
         let token = ''
-        let result: IToken = { type: 'string', value: '' } // just a dummy
+        let result: IToken = { type: 'string', value: [ '' ] } // just a dummy
 
         loop( code, char => {
             if ( char === sign ) {
