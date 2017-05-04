@@ -29,122 +29,145 @@
 // ─── ENTRY POINT ────────────────────────────────────────────────────────────────
 //
 
-    export function parse ( inlineMarkdown: string ) {
-        return parseWithI({
-            code: inlineMarkdown,
-            length: inlineMarkdown.length,
-            pointer: 0
-        })
+    export function parse ( timpaniCode: string ) {
+        return new Parser( timpaniCode ).parse( )
     }
 
 //
-// ─── GET CURRENT CHAR ───────────────────────────────────────────────────────────
+// ─── PARSER CORE ────────────────────────────────────────────────────────────────
 //
 
-    function getNextChar ( code: I, stack: string ) {
-        const char = code.code[ code.pointer++ ]
-        stack += char
-        return char
-    }
-
-// ─── LOOPER ─────────────────────────────────────────────────────────────────────
-//
-
-    function loop ( code: I, f: ( char: string ) => void ) {
-        let currentStack = ''
-        let results: IToken[ ] = [ ]
-        while ( code.pointer < code.length ) {
-            const currentChar = getNextChar( code, currentStack )
-            f( currentChar )
-        }
-    }
-
-//
-// ─── PARSER LOOP ────────────────────────────────────────────────────────────────
-//
-
-    function parseWithI ( code: I ) {
+    class Parser {
 
         //
-        // ─── VARS ────────────────────────────────────────────────────────
+        // ─── STORAGE ─────────────────────────────────────────────────────
         //
 
-            let results = new Array<IToken>( )
-            let currentStringStack = ''
+            // info
+            code: string
+            pointer: number
+            length: number
+
+            results: IToken[ ]
+
+            currentStringStack: string
 
         //
-        // ─── SUPPORTING FUNCS ────────────────────────────────────────────
+        // ─── INIT ────────────────────────────────────────────────────────
         //
 
-            function finishCurrentStack ( ) {
-                if ( currentStringStack.length !== 0 ) {
-                    results.push({
+            constructor ( code: string ) {
+                this.code = code
+                this.length = code.length
+                this.pointer = 0
+
+                this.results = new Array<IToken>( )
+                this.currentStringStack = ''
+            }
+
+        //
+        // ─── PARSE ───────────────────────────────────────────────────────
+        //
+
+            public parse ( ) {
+                this.switchLooper( )
+                this.finalizeCurrentStack( )
+                return this.results
+            }
+
+        //
+        // ─── GET NEXT CHAR ───────────────────────────────────────────────
+        //
+
+            private getNextChar ( ) {
+                return this.code[ this.pointer++ ]
+            }
+
+        //
+        // ─── FINALIZE CURRENT STACK ──────────────────────────────────────
+        //
+
+            private finalizeCurrentStack ( ) {
+                if ( this.currentStringStack !== '' ) {
+                    this.results.push({
                         type: 'string',
-                        value: [ currentStringStack ]
+                        value: [ this.currentStringStack ]
                     })
-                    currentStringStack = ''
+                }
+                this.currentStringStack = ''
+            }
+
+        //
+        // ─── SWITCH LOOPER ───────────────────────────────────────────────
+        //
+
+            private switchLooper ( ) {
+                this.loop( char => {
+                    switch ( char ) {
+                        case '*':
+                            this.finalizeCurrentStack( )
+                            this.results.push( this.parseOneCharSignedGrammar( '*', 'bold' ) )
+                            break
+
+                        case '_':
+                            this.finalizeCurrentStack( )
+                            this.results.push( this.parseOneCharSignedGrammar( '_', 'underline' ) )
+                            break
+
+                        default:
+                            this.currentStringStack += char
+                            break
+                    }
+                })
+            }
+
+        //
+        // ─── LOOP ────────────────────────────────────────────────────────
+        //
+
+            private loop ( f: ( char: string ) => void | number ) {
+                while ( this.pointer < this.length ) {
+                    const currentChar = this.getNextChar( )
+                    const breakStatus = f( currentChar )
+
+                    if ( breakStatus === 0 )
+                        break
                 }
             }
 
         //
-        // ─── THE LOOP ────────────────────────────────────────────────────
+        // ─── ONE STRING SIGNED GRAMMAR ───────────────────────────────────
         //
 
-            loop( code, char => {
-                switch ( char ) {
-                    case '*':
-                        finishCurrentStack( )
-                        results.push( parseOneCharSignedGrammar( code, '*', 'bold' ) )
-                        break
-
-                    case '_':
-                        finishCurrentStack( )
-                        results.push( parseOneCharSignedGrammar( code, '_', 'underline' ) )
-                        break
-
-                    default:
-                        currentStringStack += char
+            private parseOneCharSignedGrammar ( sign: string, type: TTokenType ): IToken {
+                let token = ''
+                let oneCharResult: IToken = {
+                    // just a dummy
+                    type: 'string',
+                    value: [ '' ]
                 }
-            })
 
-        //
-        // ─── FINISHING UP ────────────────────────────────────────────────
-        //
+                this.loop( char => {
+                    if ( char === sign ) {
+                        this.pointer++
+                        const parser = new Parser( token )
+                        oneCharResult = {
+                            type: type,
+                            value: parser.parse( )
+                        }                 
+                        return 0
 
-            finishCurrentStack( )
+                    } else {
+                        token += char
+                    }
+                })
 
-            return results
-
+                return oneCharResult
+            } 
+            
         // ─────────────────────────────────────────────────────────────────
 
     }
 
-//
-// ─── PARSE BOLD ─────────────────────────────────────────────────────────────────
-//
-
-    function parseOneCharSignedGrammar ( code: I, sign: string, type: TTokenType ): IToken {
-        let token = ''
-        let result: IToken = { type: 'string', value: [ '' ] } // just a dummy
-
-        loop( code, char => {
-            if ( char === sign ) {
-                code.pointer++
-                result = {
-                    type: type,
-                    value: parseWithI({
-                        pointer: 0,
-                        code: token,
-                        length: token.length
-                    })
-                }                 
-                return
-            } else {
-                token += char
-            }
-        })
-
-        return result
-    } 
-
 // ────────────────────────────────────────────────────────────────────────────────
+

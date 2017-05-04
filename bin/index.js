@@ -1,74 +1,82 @@
 "use strict";
-function parse(inlineMarkdown) {
-    return parseWithI({
-        code: inlineMarkdown,
-        length: inlineMarkdown.length,
-        pointer: 0
-    });
+function parse(timpaniCode) {
+    return new Parser(timpaniCode).parse();
 }
 exports.parse = parse;
-function getNextChar(code, stack) {
-    var char = code.code[code.pointer++];
-    stack += char;
-    return char;
-}
-function loop(code, f) {
-    var currentStack = '';
-    var results = [];
-    while (code.pointer < code.length) {
-        var currentChar = getNextChar(code, currentStack);
-        f(currentChar);
+var Parser = (function () {
+    function Parser(code) {
+        this.code = code;
+        this.length = code.length;
+        this.pointer = 0;
+        this.results = new Array();
+        this.currentStringStack = '';
     }
-}
-function parseWithI(code) {
-    var results = new Array();
-    var currentStringStack = '';
-    function finishCurrentStack() {
-        if (currentStringStack.length !== 0) {
-            results.push({
+    Parser.prototype.parse = function () {
+        this.switchLooper();
+        this.finalizeCurrentStack();
+        return this.results;
+    };
+    Parser.prototype.getNextChar = function () {
+        return this.code[this.pointer++];
+    };
+    Parser.prototype.finalizeCurrentStack = function () {
+        if (this.currentStringStack !== '') {
+            this.results.push({
                 type: 'string',
-                value: [currentStringStack]
+                value: [this.currentStringStack]
             });
-            currentStringStack = '';
         }
-    }
-    loop(code, function (char) {
-        switch (char) {
-            case '*':
-                finishCurrentStack();
-                results.push(parseOneCharSignedGrammar(code, '*', 'bold'));
+        this.currentStringStack = '';
+    };
+    Parser.prototype.switchLooper = function () {
+        var _this = this;
+        this.loop(function (char) {
+            switch (char) {
+                case '*':
+                    _this.finalizeCurrentStack();
+                    _this.results.push(_this.parseOneCharSignedGrammar('*', 'bold'));
+                    break;
+                case '_':
+                    _this.finalizeCurrentStack();
+                    _this.results.push(_this.parseOneCharSignedGrammar('_', 'underline'));
+                    break;
+                default:
+                    _this.currentStringStack += char;
+                    break;
+            }
+        });
+    };
+    Parser.prototype.loop = function (f) {
+        while (this.pointer < this.length) {
+            var currentChar = this.getNextChar();
+            var breakStatus = f(currentChar);
+            if (breakStatus === 0)
                 break;
-            case '_':
-                finishCurrentStack();
-                results.push(parseOneCharSignedGrammar(code, '_', 'underline'));
-                break;
-            default:
-                currentStringStack += char;
         }
-    });
-    finishCurrentStack();
-    return results;
-}
-function parseOneCharSignedGrammar(code, sign, type) {
-    var token = '';
-    var result = { type: 'string', value: [''] };
-    loop(code, function (char) {
-        if (char === sign) {
-            code.pointer++;
-            result = {
-                type: type,
-                value: parseWithI({
-                    pointer: 0,
-                    code: token,
-                    length: token.length
-                })
-            };
-            return;
-        }
-        else {
-            token += char;
-        }
-    });
-    return result;
-}
+    };
+    Parser.prototype.parseOneCharSignedGrammar = function (sign, type) {
+        var _this = this;
+        var token = '';
+        var oneCharResult = {
+            type: 'string',
+            value: ['']
+        };
+        this.loop(function (char) {
+            if (char === sign) {
+                _this.pointer++;
+                var parser = new Parser(token);
+                oneCharResult = {
+                    type: type,
+                    value: parser.parse()
+                };
+                return 0;
+            }
+            else {
+                token += char;
+            }
+        });
+        return oneCharResult;
+    };
+    return Parser;
+}());
 //# sourceMappingURL=index.js.map
