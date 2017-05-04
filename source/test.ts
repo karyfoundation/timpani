@@ -18,7 +18,7 @@
 // ─── MAIN ───────────────────────────────────────────────────────────────────────
 //
 
-    let ast = timpani.parse('hello *world* 324 _world_')
+    let ast = timpani.parse('hello *world* 324 _world_ and `this is *some code*`')
 
     console.log( ast )
 
