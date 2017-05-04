@@ -1,0 +1,23 @@
+{
+  "name": "timpani",
+  "version": "0.0.1",
+  "description": "Inline performant super minimal markdown parser",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karyfoundation/timpani.git"
+  },
+  "keywords": [
+    "markdown",
+    "karyfoundation"
+  ],
+  "author": "Kary Foundation",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/karyfoundation/timpani/issues"
+  },
+  "homepage": "https://github.com/karyfoundation/timpani#readme"
+}
