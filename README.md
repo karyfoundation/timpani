@@ -3,6 +3,11 @@ A very small markup language for inline styling supporting:
 - Bold using: `*bold*`
 - Underlined: `_underlined_`
 
+## Install
+```
+npm install --save timpani
+```
+
 ## How to use
 ```js
 import * as timpani from 'timpani'
