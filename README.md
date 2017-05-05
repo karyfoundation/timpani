@@ -2,6 +2,7 @@
 A very small markup language for inline styling supporting:
 - Bold using: `*bold*`
 - Underlined: `_underlined_`
+- Stroked: `~stroke~`
 
 ## Install
 ```

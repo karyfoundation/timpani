@@ -40,9 +40,9 @@ var Parser = (function () {
                     _this.finalizeCurrentStack();
                     _this.results.push(_this.parseOneCharSignedGrammar('_', 'underline'));
                     break;
-                case '`':
+                case '~':
                     _this.finalizeCurrentStack();
-                    _this.results.push(_this.parseOneCharSignedGrammar('`', 'code'));
+                    _this.results.push(_this.parseOneCharSignedGrammar('~', 'stroke'));
                     break;
                 default:
                     _this.currentStringStack += char;
