@@ -68,8 +68,7 @@ var Parser = (function () {
             if (char === sign) {
                 oneCharResult = {
                     type: type,
-                    value: (sign === '`') ?
-                        [token] : new Parser(token).parse()
+                    value: new Parser(token).parse()
                 };
                 return 0;
             }
